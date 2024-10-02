@@ -1,0 +1,24 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: phucdt
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: pworkspace
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: pworkspace
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: python3.12
+  region: ap-southeast-1
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - httpApi:
+          path: /
+          method: get
+
+resources:
+  Resources: ${file(resources.yml)}

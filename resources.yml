@@ -1,0 +1,51 @@
+PWorkspaceUserPool:
+  Type: AWS::Cognito::UserPool
+  Properties:
+    UserPoolName: pworkspace-user-pool
+    UsernameConfiguration:
+      CaseSensitive: false
+    AutoVerifiedAttributes:
+      - email
+    UsernameAttributes:
+      - email
+    Policies:
+      PasswordPolicy:
+        MinimumLength: 8
+        RequireUppercase: true
+        RequireLowercase: true
+        RequireNumbers: true
+        RequireSymbols: false
+    MfaConfiguration: "OFF"
+    AccountRecoverySetting:
+      RecoveryMechanisms:
+        - Name: "verified_email"
+          Priority: 1
+    AdminCreateUserConfig:
+      AllowAdminCreateUserOnly: false
+    EmailConfiguration:
+      EmailSendingAccount: "COGNITO_DEFAULT"
+      # EmailSendingAccount: "DEVELOPER"
+      SourceArn:
+        Fn::Sub: ${env:SES_ARN}
+      # From: ${env:SES_EMAIL}
+
+PWorkspaceUserPoolClient:
+  Type: AWS::Cognito::UserPoolClient
+  Properties:
+    ClientName: pworkspace-user-pool-client
+    UserPoolId:
+      Ref: PWorkspaceUserPool
+    GenerateSecret: false
+    ExplicitAuthFlows:
+      - ADMIN_NO_SRP_AUTH
+    AllowedOAuthFlowsUserPoolClient: true
+    AllowedOAuthFlows:
+      - code
+    AllowedOAuthScopes:
+      - email
+      - openid
+    CallbackURLs:
+      - "https://example.com"
+    LogoutURLs:
+      - "https://example.com/1"
+    PreventUserExistenceErrors: ENABLED
